@@ -1,4 +1,4 @@
-# steam_community-market_history-s_inspector
+# steam-community-market-history-inspector
 ## Allows you to inspect in game a CS2 item that you sold on the Steam community market — in my market history.
 
 Surely, you've had situations where you sold a skin a long time ago, and now you want to check what float value, pattern, and stickers it had at that time. However, you can't inspect the skin right away — it takes a little bit more steps. 
