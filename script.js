@@ -1,5 +1,4 @@
 const activePage = document.querySelector("#BG_bottom");
-const linkCache = new Map();
 
 function handleHover() {
     const hoverMenu = document.querySelector("#iteminfo_clienthover");
@@ -18,46 +17,37 @@ function handleHover() {
 
     if (itemName) {
         console.log(`Here is the inspect link of "${itemName.textContent}": ${inspectLink.href}`);
-        linkCache.set(inspectLink.href);
-        createInspectButton(inspectLink);
+        const elem = event.target.closest('.market_listing_row');
+        if (elem) {
+            createInspectButton(elem, inspectLink.href);
+            createInspectButton(inspectLink);
+        };
     };
 };
 
-function createInspectButton(id, href) {
-    let inspectButton = document.querySelector(`.js-inspect-btn[data-item-id="${id}"]`);
+function createInspectButton(elem, href) {
+    let inspectButton = elem.querySelector(".js-inspect-btn");
     if (!inspectButton) {
         inspectButton = document.createElement('a');
-        inspectButton.className = 'btn_small btn_grey_white_innerfade js-inspect-btn';
+        inspectButton.className = "btn_small btn_grey_white_innerfade js-inspect-btn";
         inspectButton.style.marginLeft = '15px';
-        inspectButton.href = document.querySelector("a.btn_small.btn_grey_white_innerfade[href^='steam://']")
+        inspectButton.href = href
         inspectButton.textContent = 'Inspect in game';
-        inspectButton.dataset.itemId = id;
-
-        const buttonBlock = document.getElementById(id);
-        if (buttonBlock) {
-            const nameCell = buttonBlock.querySelector('.market_listing_item_name');
-            if (nameCell) nameCell.appendChild(buttonBlock);
-
+        const nameCell = elem.querySelector('.market_listing_item_name');
+        if (nameCell) {
+            nameCell.appendChild(inspectButton);
         }
-        const blockForButton = document.querySelector('#tabContentsMyMarketHistoryRows > market_listing_row.market_recent_listing_row')
-        if (blockForButton) blockForButton.appendChild(inspectButton);
     }
-    inspectButton.href = href;
+    return inspectButton;
 }
 
 
 function handleHoverListeners() {
     const rows = (document.querySelectorAll(".market_listing_row.market_recent_listing_row"));
+    const gameName = 'Counter-Strike 2';
 
     rows.forEach(row => {
-        const gameName = 'Counter-Strike 2';
-        /*
-        Code of 'active listings' handler.
-        const link = row.querySelector("a.market_listing_item_name_link[href*='/730/']")
-        ("span.market_listing_item_name_link[href*='/730/']");
-        ("div.item_actions.economy_item_popup_only > a.btn_small.btn_grey_white_innerfade[href*='/730/']")
-        if (!link) return;
-        */
+
         const game = row.querySelector("span.market_listing_game_name")
         if (game.textContent !== gameName) {
             return;
