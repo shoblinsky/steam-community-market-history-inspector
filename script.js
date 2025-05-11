@@ -1,22 +1,50 @@
-const activePage = document.querySelector(".market_paging_pagelink.active")
-
+const activePage = document.querySelector("#BG_bottom");
+const linkCache = new Map();
 
 function handleHover() {
     const hoverMenu = document.querySelector("#iteminfo_clienthover");
     if (!hoverMenu) {
         console.log("There is no #iteminfo_clienthover element in DOM yet. Probably, your window's width less than 1000px. Return. ");
         return;
-    }
+    };
 
     const inspectLink = hoverMenu.querySelector("a.btn_small.btn_grey_white_innerfade[href^='steam://']");
     if (!inspectLink) {
-        console.log("There is no 'Inspect in game' button element yet. Probably, your window's width less than 1000px. Return. ");
+        console.log("There is no 'Inspect in game' button element yet. Probably, your window's width less than 1000px. Or you hover case/capsule-item.Return. ");
         return;
-    }
+    };
 
     const itemName = hoverMenu.querySelector("#hover_item_name");
-    console.log(`Here is the inspect link of "${itemName.textContent}": ${inspectLink.href}`);
+
+    if (itemName) {
+        console.log(`Here is the inspect link of "${itemName.textContent}": ${inspectLink.href}`);
+        linkCache.set(inspectLink.href);
+        createInspectButton(inspectLink);
+    };
 };
+
+function createInspectButton(id, href) {
+    let inspectButton = document.querySelector(`.js-inspect-btn[data-item-id="${id}"]`);
+    if (!inspectButton) {
+        inspectButton = document.createElement('a');
+        inspectButton.className = 'btn_small btn_grey_white_innerfade js-inspect-btn';
+        inspectButton.style.marginLeft = '15px';
+        inspectButton.href = document.querySelector("a.btn_small.btn_grey_white_innerfade[href^='steam://']")
+        inspectButton.textContent = 'Inspect in game';
+        inspectButton.dataset.itemId = id;
+
+        const buttonBlock = document.getElementById(id);
+        if (buttonBlock) {
+            const nameCell = buttonBlock.querySelector('.market_listing_item_name');
+            if (nameCell) nameCell.appendChild(buttonBlock);
+
+        }
+        const blockForButton = document.querySelector('#tabContentsMyMarketHistoryRows > market_listing_row.market_recent_listing_row')
+        if (blockForButton) blockForButton.appendChild(inspectButton);
+    }
+    inspectButton.href = href;
+}
+
 
 function handleHoverListeners() {
     const rows = (document.querySelectorAll(".market_listing_row.market_recent_listing_row"));
@@ -33,7 +61,7 @@ function handleHoverListeners() {
         const game = row.querySelector("span.market_listing_game_name")
         if (game.textContent !== gameName) {
             return;
-        }
+        };
 
         const image = row.querySelector(".market_listing_item_img.economy_item_hoverable");
         const name = row.querySelector(".market_listing_item_name.economy_item_hoverable");
@@ -41,22 +69,12 @@ function handleHoverListeners() {
         if (image && name) {
             image.addEventListener("mouseenter", handleHover);
             name.addEventListener("mouseenter", handleHover);
-        }
-
-
+        };
     });
 };
-function createInspectButton() {
-    const inspectButton = document.createElement('a');
-    inspectButton.className = 'btn_small btn_grey_white_innerfade js-inspect-btn';
-    inspectButton.style.marginLeft = '15px';
-    inspectButton.href = document.querySelector("a.btn_small.btn_grey_white_innerfade[href^='steam://']")
-    inspectButton.textContent = 'Inspect in game';
-    const blockForButton = document.querySelector('#tabContentsMyMarketHistoryRows > market_listing_row.market_recent_listing_row')
-    if (blockForButton) blockForButton.appendChild(inspectButton);
-}
 
 if (activePage) {
     handleHoverListeners()
-    createInspectButton()
-}
+    const observer = new MutationObserver(handleHoverListeners);
+    observer.observe(document.body, { childList: true, subtree: true });
+};
