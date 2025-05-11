@@ -1,3 +1,6 @@
+const activePage = document.querySelector(".market_paging_pagelink.active")
+
+
 function handleHover() {
     const hoverMenu = document.querySelector("#iteminfo_clienthover");
     if (!hoverMenu) {
@@ -39,8 +42,21 @@ function handleHoverListeners() {
             image.addEventListener("mouseenter", handleHover);
             name.addEventListener("mouseenter", handleHover);
         }
+
+
     });
 };
+function createInspectButton() {
+    const inspectButton = document.createElement('a');
+    inspectButton.className = 'btn_small btn_grey_white_innerfade js-inspect-btn';
+    inspectButton.style.marginLeft = '15px';
+    inspectButton.href = document.querySelector("a.btn_small.btn_grey_white_innerfade[href^='steam://']")
+    inspectButton.textContent = 'Inspect in game';
+    const blockForButton = document.querySelector('#tabContentsMyMarketHistoryRows > market_listing_row.market_recent_listing_row')
+    if (blockForButton) blockForButton.appendChild(inspectButton);
+}
 
-handleHoverListeners()
-
+if (activePage) {
+    handleHoverListeners()
+    createInspectButton()
+}
